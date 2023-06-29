@@ -3,7 +3,6 @@ const Stripe = require("stripe");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const path = require("path");
-const { time } = require("console");
 require("dotenv").config();
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
@@ -44,7 +43,7 @@ router.post("/create-checkout-session", async (req, res) => {
         currency: "usd",
         product_data: {
           name: item.name,
-          // images: [item.image],
+          imageUrl: item.image,
           description: item.desc,
           metadata: {
             id: item.id,
@@ -57,53 +56,7 @@ router.post("/create-checkout-session", async (req, res) => {
   });
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
-    // shipping_address_collection: {
-    //   allowed_countries: ["US", "CA", "KE"],
-    // },
-    // shipping_options: [
-    //   {
-    //     shipping_rate_data: {
-    //       type: "fixed_amount",
-    //       fixed_amount: {
-    //         amount: 0,
-    //         currency: "usd",
-    //       },
-    //       display_name: "Free shipping",
-    //       // Delivers between 5-7 business days
-    //       delivery_estimate: {
-    //         minimum: {
-    //           unit: "business_day",
-    //           value: 5,
-    //         },
-    //         maximum: {
-    //           unit: "business_day",
-    //           value: 7,
-    //         },
-    //       },
-    //     },
-    //   },
-    //   {
-    //     shipping_rate_data: {
-    //       type: "fixed_amount",
-    //       fixed_amount: {
-    //         amount: 1500,
-    //         currency: "usd",
-    //       },
-    //       display_name: "Next day air",
-    //       // Delivers in exactly 1 business day
-    //       delivery_estimate: {
-    //         minimum: {
-    //           unit: "business_day",
-    //           value: 1,
-    //         },
-    //         maximum: {
-    //           unit: "business_day",
-    //           value: 1,
-    //         },
-    //       },
-    //     },
-    //   },
-    // ],
+   
     
     phone_number_collection: {
       enabled: false,
@@ -111,8 +64,8 @@ router.post("/create-checkout-session", async (req, res) => {
     line_items,
     mode: "payment",
     customer: customer.id,
-    success_url: "https://704f-165-154-72-184.ngrok-free.app/stripe/checkout-success",
-    cancel_url:  "https://704f-165-154-72-184.ngrok-free.app/stripe/cancel",
+    success_url: "https://4e2e-38-98-135-218.ngrok-free.app/stripe/checkout-success",
+    cancel_url:  "https://4e2e-38-98-135-218.ngrok-free.app/stripe/cancel",
   });
 
   // res.redirect(303, session.url);
@@ -211,31 +164,6 @@ const createOrder = async (customer, data) => {
 //   }
 // );
 
-// router.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
-//   const sig = request.headers['stripe-signature'];
 
-//   let event;
-
-//   try {
-//     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-//   } catch (err) {
-//     response.status(400).send(`Webhook Error: ${err.message}`);
-//     return;
-//   }
-
-//   // Handle the event
-//   switch (event.type) {
-//     case 'payment_intent.succeeded':
-//       const paymentIntentSucceeded = event.data.object;
-//       // Then define and call a function to handle the event payment_intent.succeeded
-//       break;
-//     // ... handle other event types
-//     default:
-//       console.log(`Unhandled event type ${event.type}`);
-//   }
-
-//   // Return a 200 response to acknowledge receipt of the event
-//   response.send();
-// });
 
 module.exports = router;
